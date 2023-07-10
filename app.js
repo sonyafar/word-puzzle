@@ -189,32 +189,35 @@ function checkOccupation(word, startIndex, orientation) {
     return isEmpty;
 }
 
-
+// Find the moves you need to win and highlight the words found
 function solve() {
     let grid = prepareGrid();
     let directions = [[0, 1], [1, 0], [1, 1]];
 
+    // copy an original array 
+    let words_set = words.slice(words);
+
     for(let i = 0; i < 10; i++) {
         for(let j = 0; j < 10; j++) {
             let letter = document.querySelector(`[data-row="${i}"]` + `[data-column="${j}"]`).innerText;
-            let start = words.some(word => word.startsWith(letter));
+            let isWordsFound = words_set.some(word => word.startsWith(letter));
 
-            if(start) {
+            if(isWordsFound) {
                 for(let dir of directions) {
-                    if(start) {
-                        let [moves, word] = check(grid, i, j, dir);
+                    let [moves, word] = check(grid, i, j, dir);
                         
-                        if(moves.length != 0) {
-                            console.log(moves);
-                            showSolution(moves, word);
-                        };
-                    }
+                    if(moves.length != 0) {
+                        showSolution(moves, word);
+                        let index = words_set.indexOf(word);
+                        words_set.splice(index, 1)
+                    };
                 }
             }
         }
     }
 }
 
+// Find the moves you need to win
 function check(grid, i, j, directions) {
     let substring = '';
     let moves = [];
@@ -237,7 +240,7 @@ function check(grid, i, j, directions) {
     return [moves, substring];
 }
 
-
+// Highlight the words found
 function showSolution(moves, word) {
     if(moves[0][0] == moves[1][0]) {
         for(let i = moves[0][1]; i <= moves[1][1]; i++) {
